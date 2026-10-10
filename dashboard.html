@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>جَهِّزلي | الرئيسية</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = { darkMode: 'class', theme: { extend: { colors: { orange: '#FF6B00', gold: '#D4AF37' }, fontFamily: { cairo: ['Cairo', 'sans-serif'] } } } }
+    </script>
+    <style>
+        body { font-family: 'Cairo', sans-serif; background-color: #050505; color: white; margin: 0; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .bg-cinematic { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -2; background-image: url('https://images.unsplash.com/photo-1497935586351-b67a49e012bf?q=80&w=2000&auto=format&fit=crop'); background-size: cover; background-position: center; }
+        .bg-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: -1; background: linear-gradient(180deg, rgba(5,5,5,0.85) 0%, rgba(5,5,5,0.98) 100%); backdrop-filter: blur(10px); }
+        .glass-panel { background: rgba(20, 20, 20, 0.4); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.08); border-top: 1px solid rgba(255, 255, 255, 0.15); box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .animate-fade-up { animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both; }
+        .card-delay-1 { animation-delay: 0.1s; } .card-delay-2 { animation-delay: 0.2s; }
+    </style>
+</head>
+<body class="flex flex-col h-screen overflow-hidden relative">
+
+    <div class="bg-cinematic"></div>
+    <div class="bg-overlay"></div>
+
+    <main class="flex-1 overflow-y-auto p-4 pb-36 no-scrollbar relative z-10">
+        
+        <section id="productsSection" class="animate-fade-up">
+            <div id="orderTrackingBanner" class="hidden glass-panel border-orange/50 rounded-3xl p-5 mb-6 relative overflow-hidden bg-gradient-to-r from-orange/10 to-transparent">
+                <div class="flex justify-between items-center mb-3">
+                    <span id="trackingStatusText" class="text-white font-black text-sm tracking-wide">بانتظار الإدارة</span>
+                    <span class="text-orange font-bold text-xs flex items-center gap-2"><span class="w-2.5 h-2.5 rounded-full bg-orange animate-pulse shadow-[0_0_10px_#FF6B00]"></span> طلبك الحالي</span>
+                </div>
+                <div class="w-full bg-black/60 h-2 rounded-full overflow-hidden border border-white/5">
+                    <div id="trackingProgressBar" class="bg-gradient-to-r from-orange to-gold h-full w-1/3 rounded-full transition-all duration-700 shadow-[0_0_15px_#FF6B00]"></div>
+                </div>
+            </div>
+
+            <div class="flex justify-between items-center mb-8">
+                <div class="w-14 h-14 rounded-2xl border border-white/10 text-orange font-black flex items-center justify-center text-xl glass-panel shadow-[0_0_20px_rgba(255,107,0,0.15)] overflow-hidden p-1 relative group">
+                    <div class="absolute inset-0 bg-gradient-to-tr from-orange/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <img src="logo.png" alt="لوكو" class="w-full h-full object-cover rounded-xl scale-110" onerror="this.outerHTML=`<span class='drop-shadow-lg text-2xl'>👑</span>`">
+                </div>
+                <div class="text-left">
+                    <p id="timeGreeting" class="text-[10px] text-orange font-bold uppercase tracking-widest mb-1">مرحباً بك</p>
+                    <h1 id="userNameDisplay" class="text-2xl font-black text-white drop-shadow-lg tracking-tight">جاري التحميل...</h1>
+                </div>
+            </div>
+
+            <div class="relative mb-8 group">
+                <input type="text" placeholder="ابحث عن منتج، صنف..." class="w-full glass-panel rounded-3xl py-4 px-14 text-sm text-white focus:border-orange outline-none transition-all focus:bg-black/40 focus:shadow-[0_0_25px_rgba(255,107,0,0.15)] group-hover:border-white/20">
+                <span class="absolute right-5 top-1/2 transform -translate-y-1/2 text-xl opacity-50 group-hover:opacity-100 transition-opacity drop-shadow-md">🔍</span>
+            </div>
+
+            <div class="flex gap-3 overflow-x-auto no-scrollbar mb-8 pb-2" id="categoryFilters"></div>
+            <div id="productsGrid" class="grid grid-cols-2 gap-4"></div>
+        </section>
+
+        <section id="historySection" class="hidden animate-fade-up">
+            <h2 class="text-2xl font-black mb-6 flex items-center gap-2 drop-shadow-lg tracking-tight">سجل طلباتي 📜</h2>
+            <div id="historyGrid" class="space-y-4 pb-10"></div>
+        </section>
+
+        <section id="profileSection" class="hidden animate-fade-up">
+            <h2 class="text-2xl font-black mb-6 drop-shadow-lg tracking-tight">إعداداتي ⚙️</h2>
+            <div class="glass-panel p-6 rounded-3xl space-y-5 mb-6">
+                <div><p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1">المندوب / الزبون</p><p id="profileCustomerName" class="text-xl font-black text-white drop-shadow-md"></p></div>
+                <div class="border-t border-white/10 pt-5"><p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1">اسم المطعم</p><p id="profileShopName" class="text-xl font-black text-white drop-shadow-md"></p></div>
+                <div class="border-t border-white/10 pt-5"><p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1">رقم الهاتف</p><p id="profilePhone" class="text-xl font-black text-white drop-shadow-md"></p></div>
+                <div class="border-t border-white/10 pt-5"><p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1">العنوان</p><p id="profileLocation" class="text-xl font-black text-white drop-shadow-md"></p></div>
+            </div>
+
+            <!-- أزرار الدعم الفني -->
+            <div class="flex gap-3 mb-8">
+                <!-- استبدل 07000000000 برقمك للواتساب (بدون صفر البداية ومفتاح العراق 964) -->
+                <a href="https://wa.me/9647739741411" target="_blank" class="flex-1 bg-gradient-to-r from-green-500 to-green-600 text-white py-3 rounded-2xl font-black text-center flex items-center justify-center gap-2 shadow-[0_10px_20px_rgba(34,197,94,0.3)] hover:scale-105 transition-transform">واتساب 💬</a>
+                <!-- استبدل 07000000000 برقمك للاتصال العادي -->
+                <a href="tel:07739471411" class="flex-1 bg-gradient-to-r from-blue-500 to-blue-600 text-white py-3 rounded-2xl font-black text-center flex items-center justify-center gap-2 shadow-[0_10px_20px_rgba(59,130,246,0.3)] hover:scale-105 transition-transform">اتصال 📞</a>
+            </div>
+
+            <button onclick="logoutUser()" class="w-full bg-gradient-to-r from-red-600/80 to-red-500/80 text-white py-4 rounded-2xl font-black text-lg border border-red-500/50 hover:from-red-600 hover:to-red-500 transition-all shadow-[0_10px_30px_rgba(239,68,68,0.3)]">تسجيل الخروج 🚪</button>
+        </section>
+    </main>
+
+    <div id="floatingCart" class="fixed bottom-24 left-4 right-4 glass-panel border border-orange/30 bg-black/60 rounded-[2rem] p-4 flex justify-between items-center z-40 shadow-[0_20px_40px_rgba(0,0,0,0.8)] hidden transition-all animate-fade-up">
+        <button onclick="toggleCart()" class="bg-gradient-to-r from-orange to-gold text-black px-8 py-3 rounded-2xl font-black shadow-[0_5px_15px_rgba(255,107,0,0.4)] hover:scale-105 transition-transform">عرض السلة</button>
+        <div class="flex items-center gap-4 text-left">
+            <div><p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest">الإجمالي</p><p id="floatingTotal" class="font-black text-white text-xl drop-shadow-lg">0 د.ع</p></div>
+            <div class="relative bg-white/5 p-3 rounded-2xl border border-white/10 shadow-inner">🛒 <span id="floatingCount" class="absolute -top-2 -right-2 bg-gradient-to-tr from-orange to-red-500 text-white text-[10px] font-black w-6 h-6 flex items-center justify-center rounded-full shadow-[0_0_15px_rgba(255,107,0,0.6)] border border-white/20">0</span></div>
+        </div>
+    </div>
+
+    <nav class="fixed bottom-0 left-0 right-0 glass-panel !bg-[#0a0a0a]/90 border-t border-white/10 flex justify-around p-2 z-30 pb-safe shadow-[0_-20px_40px_rgba(0,0,0,0.8)] rounded-t-[2rem]">
+        <button onclick="switchTab('profile')" id="tab-profile" class="text-gray-500 hover:text-white font-bold text-[10px] uppercase tracking-wider flex flex-col items-center gap-1.5 transition-all p-2"><span class="text-2xl drop-shadow-md">⚙️</span>إعداداتي</button>
+        <button onclick="switchTab('history')" id="tab-history" class="text-gray-500 hover:text-white font-bold text-[10px] uppercase tracking-wider flex flex-col items-center gap-1.5 transition-all p-2"><span class="text-2xl drop-shadow-md">🛒</span>سجل</button>
+        <button onclick="switchTab('products')" id="tab-products" class="text-orange font-bold text-[10px] uppercase tracking-wider flex flex-col items-center gap-1.5 transition-all p-2 transform scale-110"><span class="text-2xl drop-shadow-[0_0_10px_rgba(255,107,0,0.5)]">🏠</span>الرئيسية</button>
+    </nav>
+
+    <div id="cartModal" class="hidden fixed inset-0 z-50 flex items-end sm:items-center justify-center">
+        <div class="absolute inset-0 bg-black/80 backdrop-blur-md" onclick="toggleCart()"></div>
+        <div class="bg-[#0f1115]/95 w-full sm:w-96 h-[85vh] sm:h-auto sm:max-h-[90vh] rounded-t-[2.5rem] sm:rounded-[2.5rem] border-t border-white/10 flex flex-col relative shadow-[0_0_50px_rgba(0,0,0,0.8)] animate-fade-up">
+            <button onclick="toggleCart()" class="absolute top-5 left-5 w-10 h-10 bg-white/5 border border-white/10 text-gray-400 rounded-full font-bold flex items-center justify-center hover:bg-red-500 hover:text-white hover:border-red-500 transition-all shadow-lg">✕</button>
+            <div class="p-6 border-b border-white/5 text-center"><h2 class="text-2xl font-black text-white tracking-tight drop-shadow-lg">سلة الطلبات 🛒</h2></div>
+            <div id="cartItems" class="flex-1 overflow-y-auto p-5 space-y-4 no-scrollbar"></div>
+            <div class="p-6 bg-black/40 border-t border-white/5 mt-auto rounded-b-[2.5rem]">
+                <div class="flex justify-between items-end mb-5"><span class="text-gray-400 text-sm font-bold uppercase tracking-widest">المجموع الكلي:</span><span id="cartTotal" class="text-3xl font-black text-gold drop-shadow-lg">0 د.ع</span></div>
+                <button onclick="confirmOrder()" class="w-full bg-gradient-to-r from-orange to-[#ff4500] text-white py-5 rounded-2xl font-black text-xl shadow-[0_10px_30px_rgba(255,107,0,0.3)] hover:shadow-[0_15px_40px_rgba(255,107,0,0.5)] transition-all transform hover:-translate-y-1">تأكيد وإرسال الطلب 🚀</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="vvipSuccessModal" class="hidden fixed inset-0 z-[100] flex items-center justify-center">
+        <div class="absolute inset-0 bg-black/90 backdrop-blur-xl"></div>
+        <div class="relative glass-panel border border-green-500/50 shadow-[0_0_80px_rgba(34,197,94,0.3)] rounded-[2.5rem] p-10 w-3/4 max-w-sm flex flex-col items-center text-center animate-fade-up">
+            <div class="w-24 h-24 bg-gradient-to-br from-green-400 to-green-600 text-white rounded-full flex items-center justify-center text-5xl mb-6 shadow-[0_0_30px_rgba(34,197,94,0.5)] border-4 border-black/50">✓</div>
+            <h2 class="text-3xl font-black text-white mb-2 tracking-tight">تم استلام الطلب</h2>
+            <p class="text-sm text-gray-400 font-bold">جاري إرساله للإدارة للتحضير...</p>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "https://jahhazli-core.onrender.com"; 
+        let cart = []; let allProducts = []; let currentCategory = "الكل";
+        const BOT_TOKEN = "8786918768:AAHn1adiFoB76D6ChNSxjPUhUBNPXH8x2y0"; const CHAT_ID = "1337871873";
+
+        function checkUserLogin() {
+            let phone = localStorage.getItem('user_phone'); let shop = localStorage.getItem('shop_name'); let location = localStorage.getItem('user_location') || "غير محدد"; let customer = localStorage.getItem('customer_name') || "";
+            if (!phone || !shop) { window.location.href = 'register.html'; return; }
+            document.getElementById('userNameDisplay').innerText = customer ? customer : shop; 
+            document.getElementById('profileCustomerName').innerText = customer; document.getElementById('profileShopName').innerText = shop; document.getElementById('profilePhone').innerText = phone; document.getElementById('profileLocation').innerText = location;
+            
+            let hour = new Date().getHours();
+            let greeting = (hour >= 5 && hour < 15) ? "صباح الخير ☀️" : "مساء الخير 🌙";
+            document.getElementById('timeGreeting').innerText = greeting;
+        }
+
+        async function checkActiveOrder() {
+            const userPhone = localStorage.getItem('user_phone'); if (!userPhone) return;
+            try {
+                const res = await fetch(`${API_URL}/orders/`); const orders = await res.json();
+                const activeOrder = orders.filter(o => o.phone === userPhone).find(o => o.status !== 'مكتمل' && o.status !== 'ملغي');
+                const banner = document.getElementById('orderTrackingBanner'); const statusText = document.getElementById('trackingStatusText'); const progressBar = document.getElementById('trackingProgressBar');
+                if (activeOrder) {
+                    banner.classList.remove('hidden');
+                    if (activeOrder.status === 'جديد') { statusText.innerText = 'بانتظار موافقة الإدارة ⏳'; progressBar.className = "bg-gradient-to-r from-orange to-gold h-full w-1/3 rounded-full transition-all duration-700 shadow-[0_0_15px_#FF6B00]"; } 
+                    else if (activeOrder.status === 'قيد التحضير') { statusText.innerText = 'جاري التجهيز 📦'; progressBar.className = "bg-gradient-to-r from-blue-500 to-cyan-400 h-full w-2/3 rounded-full transition-all duration-700 shadow-[0_0_15px_#3B82F6]"; }
+                } else banner.classList.add('hidden');
+            } catch (error) {}
+        }
+
+        function switchTab(tab) {
+            ['products', 'history', 'profile'].forEach(t => document.getElementById(`${t}Section`).classList.add('hidden'));
+            ['products', 'history', 'profile'].forEach(t => { const btn = document.getElementById(`tab-${t}`); btn.classList.remove('text-orange', 'scale-110'); btn.classList.add('text-gray-500'); });
+            document.getElementById(`${tab}Section`).classList.remove('hidden');
+            const activeBtn = document.getElementById(`tab-${tab}`); activeBtn.classList.add('text-orange', 'scale-110'); activeBtn.classList.remove('text-gray-500');
+            if (tab === 'history') loadHistory();
+        }
+
+        async function loadProducts() { try { const res = await fetch(`${API_URL}/products/`); allProducts = (await res.json()).filter(p => p.available !== false); renderCategories(); filterProducts("الكل"); } catch (error) {} }
+        function renderCategories() {
+            const filtersContainer = document.getElementById('categoryFilters');
+            const categories = ["الكل", ...new Set(allProducts.map(p => p.category))];
+            filtersContainer.innerHTML = categories.map(cat => {
+                const isActive = cat === currentCategory;
+                const activeClass = isActive ? "bg-gradient-to-r from-orange to-gold text-black shadow-[0_0_20px_rgba(255,107,0,0.3)] border-transparent" : "glass-panel border-white/10 text-gray-300 hover:text-white hover:bg-white/10";
+                return `<button onclick="filterProducts('${cat}')" class="px-6 py-2.5 rounded-2xl text-sm font-black whitespace-nowrap transition-all border ${activeClass}">${cat === 'الكل' ? 'عرض الكل' : cat}</button>`;
+            }).join('');
+        }
+
+        function filterProducts(category) {
+            currentCategory = category; renderCategories(); const grid = document.getElementById('productsGrid'); grid.innerHTML = '';
+            const filtered = category === "الكل" ? allProducts : allProducts.filter(p => p.category === category);
+            if(filtered.length === 0) { grid.innerHTML = '<p class="col-span-2 text-center text-gray-500 mt-10 font-bold">لا توجد منتجات.</p>'; return; }
+            filtered.forEach((p, index) => {
+                let delay = index % 2 === 0 ? 'card-delay-1' : 'card-delay-2';
+                grid.innerHTML += `<div class="glass-panel rounded-3xl p-3 flex flex-col relative hover:shadow-[0_0_30px_rgba(255,255,255,0.08)] transition-all group animate-fade-up ${delay}"><div class="w-full h-36 rounded-2xl overflow-hidden mb-3 relative border border-white/5 shadow-inner"><img src="${p.img}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out" alt="${p.name}"><div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60"></div></div><h3 class="font-black text-white text-sm mb-1 text-right drop-shadow-md tracking-tight px-1">${p.name}</h3><p class="text-orange font-black text-sm text-right mb-5 drop-shadow-md px-1">${p.price.toLocaleString()} د.ع</p><button onclick="addToCart(${p.id})" class="absolute bottom-3 left-3 w-10 h-10 bg-black/40 backdrop-blur-md border border-white/10 text-white rounded-full flex items-center justify-center font-bold text-xl hover:bg-orange hover:border-orange hover:shadow-[0_0_20px_rgba(255,107,0,0.5)] transition-all group-hover:rotate-90">+</button></div>`;
+            });
+        }
+
+        function toggleCart() { document.getElementById('cartModal').classList.toggle('hidden'); }
+        function logoutUser() { localStorage.clear(); window.location.href = 'register.html'; }
+        function addToCart(productId) { const product = allProducts.find(p => p.id === productId); const existingItem = cart.find(item => item.id === productId); if (existingItem) existingItem.qty++; else cart.push({ ...product, qty: 1 }); updateCartUI(); }
+        function changeQty(productId, delta) { const item = cart.find(i => i.id === productId); if (!item) return; item.qty += delta; if (item.qty <= 0) cart = cart.filter(i => i.id !== productId); updateCartUI(); }
+
+        function updateCartUI() {
+            const container = document.getElementById('cartItems'); container.innerHTML = ''; let total = 0; let count = 0;
+            cart.forEach(item => { total += item.price * item.qty; count += item.qty;
+                container.innerHTML += `<div class="glass-panel p-3 rounded-2xl flex items-center justify-between border border-white/5 animate-fade-up"><div class="flex items-center gap-4"><img src="${item.img}" class="w-16 h-16 rounded-xl object-cover shadow-lg border border-white/10"><div><h4 class="text-sm font-black text-white tracking-tight">${item.name}</h4><p class="text-xs text-gold font-bold mt-1">${item.price.toLocaleString()} د.ع</p></div></div><div class="flex items-center gap-3 bg-black/50 p-1.5 rounded-xl border border-white/5 shadow-inner"><button onclick="changeQty(${item.id}, -1)" class="w-7 h-7 bg-white/5 hover:bg-white/20 rounded-lg flex items-center justify-center text-white font-bold transition">-</button><span class="text-sm font-black w-5 text-center text-white">${item.qty}</span><button onclick="changeQty(${item.id}, 1)" class="w-7 h-7 bg-white/5 hover:bg-white/20 rounded-lg flex items-center justify-center text-white font-bold transition">+</button></div></div>`;
+            });
+            document.getElementById('cartTotal').innerText = `${total.toLocaleString()} د.ع`; const floatingCart = document.getElementById('floatingCart');
+            if(count > 0) { floatingCart.classList.remove('hidden'); document.getElementById('floatingTotal').innerText = `${total.toLocaleString()} د.ع`; document.getElementById('floatingCount').innerText = count; } else { floatingCart.classList.add('hidden'); }
+        }
+
+        function sendTelegramNotification(order, customer) {
+            let itemsText = cart.map((item, index) => `${index + 1}. ${item.name}(العدد: ${item.qty})`).join('\n');
+            let text = `🧾 وصل طلب جديد - جَهِّزلي 🧾\n=======================\n👤 المندوب: ${customer}\n🏪 المطعم: ${localStorage.getItem('shop_name')}\n📍 العنوان: ${order.location} | 📞 ${order.phone}\n=======================\n📦 تفاصيل المنتجات:\n${itemsText}\n=======================\n💰 الإجمالي: ${order.total.toLocaleString()} د.ع\n🕒 الوقت: ${order.date}`;
+            fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage?chat_id=${CHAT_ID}&text=${encodeURIComponent(text)}`).catch(e => console.log(e));
+        }
+
+        async function confirmOrder() {
+            if (cart.length === 0) return;
+            const customer = localStorage.getItem('customer_name') || "";
+            const shop = localStorage.getItem('shop_name') || "غير محدد";
+            const fullShopName = customer ? `${shop} (المندوب: ${customer})` : shop;
+            const orderData = { shop_name: fullShopName, phone: localStorage.getItem('user_phone') || "غير محدد", location: localStorage.getItem('user_location') || "غير محدد", items: JSON.stringify(cart), total: cart.reduce((sum, item) => sum + (item.price * item.qty), 0), date: new Date().toLocaleString('ar-IQ') };
+            try {
+                const response = await fetch(`${API_URL}/orders/`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(orderData) });
+                if (!response.ok) throw new Error("السيرفر رفض الطلب.");
+                sendTelegramNotification(orderData, customer);
+                document.getElementById('cartModal').classList.add('hidden');
+                document.getElementById('vvipSuccessModal').classList.remove('hidden');
+                setTimeout(() => { document.getElementById('vvipSuccessModal').classList.add('hidden'); cart = []; updateCartUI(); checkActiveOrder(); switchTab('products'); }, 2500);
+            } catch (error) { alert("حدث خطأ أثناء إرسال الطلب للسيرفر!"); }
+        }
+
+        async function loadHistory() {
+            const userPhone = localStorage.getItem('user_phone'); const grid = document.getElementById('historyGrid'); grid.innerHTML = '<p class="text-center text-gray-500 mt-10 font-bold">جاري التحميل...</p>';
+            try {
+                const orders = await (await fetch(`${API_URL}/orders/`)).json(); const customerOrders = orders.filter(o => o.phone === userPhone);
+                if (customerOrders.length === 0) { grid.innerHTML = '<p class="text-center text-gray-500 mt-10 font-bold">لا توجد طلبات سابقة.</p>'; return; }
+                grid.innerHTML = '';
+                customerOrders.forEach((order, index) => {
+                    let items = []; try { items = JSON.parse(order.items); } catch(e) {}
+                    let itemsHtml = items.map(i => `<span class="text-[10px] bg-black/40 px-2.5 py-1 rounded-md border border-white/5 shadow-inner font-bold">${i.qty}x ${i.name}</span>`).join(' ');
+                    let statusColor = order.status === 'جديد' ? 'text-orange border-orange/50 shadow-[0_0_10px_rgba(255,107,0,0.2)]' : order.status === 'مكتمل' ? 'text-green-400 border-green-500/50 shadow-[0_0_10px_rgba(34,197,94,0.2)]' : order.status === 'ملغي' ? 'text-red-500 border-red-500/50 shadow-[0_0_10px_rgba(239,68,68,0.2)]' : 'text-cyan-400 border-cyan-500/50 shadow-[0_0_10px_rgba(34,211,238,0.2)]';
+                    let delay = index % 2 === 0 ? 'card-delay-1' : 'card-delay-2';
+                    grid.innerHTML += `<div class="glass-panel p-5 rounded-[2rem] relative hover:shadow-[0_0_20px_rgba(255,255,255,0.05)] transition-all animate-fade-up ${delay}"><div class="flex justify-between items-center mb-4"><span class="font-black text-white text-lg drop-shadow-md tracking-tight">طلب #${order.id}</span><span class="text-[10px] font-black px-3 py-1.5 rounded-xl border bg-black/40 ${statusColor}">${order.status}</span></div><p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-4">🕒 ${order.date}</p><div class="flex flex-wrap gap-1.5 mb-5">${itemsHtml}</div><div class="flex justify-between items-end border-t border-white/5 pt-4"><div><p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1">الإجمالي</p><p class="text-gold font-black text-xl drop-shadow-lg">${order.total.toLocaleString()} د.ع</p></div></div></div>`;
+                });
+            } catch (error) { grid.innerHTML = '<p class="text-center text-red-500 font-bold">حدث خطأ في تحميل الطلبات</p>'; }
+        }
+
+        window.onload = function() { checkUserLogin(); loadProducts(); checkActiveOrder(); setInterval(checkActiveOrder, 5000); };
+    </script>
+</body>
+</html>

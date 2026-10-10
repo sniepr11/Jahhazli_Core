@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <title>لوحة الإدارة | تسجيل الدخول</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>tailwind.config = { darkMode: 'class', theme: { extend: { colors: { navyDark: '#070C15', orange: '#FF6B00' }, fontFamily: { cairo: ['Cairo', 'sans-serif'] } } } }</script>
+    <style>body { font-family: 'Cairo', sans-serif; background-color: #070C15; color: white; }</style>
+</head>
+<body class="flex items-center justify-center h-screen relative overflow-hidden">
+    <div class="absolute top-[10%] left-[10%] w-96 h-96 bg-red-600/10 rounded-full blur-[120px] pointer-events-none"></div>
+    <div class="bg-[#111620]/80 backdrop-blur-xl border border-white/10 p-8 rounded-3xl shadow-2xl z-10 w-full max-w-sm mx-4 text-center">
+        <div class="w-20 h-20 mx-auto bg-navyDark border border-red-500/50 rounded-full flex items-center justify-center text-4xl mb-4 shadow-lg">👑</div>
+        <h1 class="text-2xl font-black text-white mb-6">لوحة الإدارة المركزية</h1>
+        
+        <form id="adminForm" onsubmit="checkPin(event)" class="space-y-4">
+            <select id="adminName" required class="w-full bg-black/50 border border-white/10 rounded-2xl px-4 py-4 text-white focus:border-red-500 outline-none transition-all">
+                <option value="" disabled selected>-- جاري تحميل الحسابات --</option>
+            </select>
+            <input type="password" id="adminPin" required placeholder="رمز المرور" class="w-full bg-black/50 border border-white/10 rounded-2xl px-4 py-4 text-center text-xl text-white tracking-widest focus:border-red-500 outline-none transition-all mb-2" dir="ltr">
+            <p id="errorMsg" class="text-red-500 text-sm font-bold hidden mb-4">الرمز غير صحيح!</p>
+            <button type="submit" class="w-full bg-red-600/20 text-red-500 border border-red-600/50 py-4 rounded-2xl font-black text-lg hover:bg-red-600 hover:text-white transition-all">دخول للإدارة 🔒</button>
+        </form>
+    </div>
+
+    <script>
+        let dbAdmins = [];
+        window.onload = async function() {
+            try {
+                // تم التحديث هنا للرابط الجديد الخاص بسيرفر Render
+                const res = await fetch('https://jahhazli-core.onrender.com/admins/');
+                dbAdmins = await res.json();
+                const select = document.getElementById('adminName');
+                select.innerHTML = '<option value="" disabled selected>-- اختر الحساب --</option>';
+                dbAdmins.forEach(a => { select.innerHTML += `<option value="${a.name}">${a.name}</option>`; });
+            } catch(e) { document.getElementById('adminName').innerHTML = '<option disabled selected>تأكد من تشغيل السيرفر</option>'; }
+        }
+
+        function checkPin(e) {
+            e.preventDefault();
+            const name = document.getElementById('adminName').value;
+            const pin = document.getElementById('adminPin').value;
+            const admin = dbAdmins.find(a => a.name === name && a.pin === pin);
+            if(admin) {
+                localStorage.setItem('active_admin', admin.name);
+                localStorage.setItem('is_master', admin.is_master); // تحديد إذا كان مدير عام
+                window.location.href = 'admin-dashboard.html';
+            } else {
+                document.getElementById('errorMsg').classList.remove('hidden');
+            }
+        }
+    </script>
+</body>
+</html>
