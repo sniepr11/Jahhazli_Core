@@ -32,7 +32,6 @@ def read_root():
 # -----------------
 # مسارات الـ Admins
 # -----------------
-
 @app.post("/admins/", response_model=schemas.Admin)
 def create_admin(admin: schemas.AdminCreate, db: Session = Depends(get_db)):
     db_admin = db.query(models.Admin).filter(models.Admin.username == admin.username).first()
@@ -68,7 +67,6 @@ def delete_admin(admin_id: int, db: Session = Depends(get_db)):
 # -----------------
 # مسارات المنتجات (Products)
 # -----------------
-
 @app.post("/products/", response_model=schemas.Product)
 def create_product(product: schemas.ProductCreate, db: Session = Depends(get_db)):
     new_product = models.Product(**product.model_dump())
@@ -113,8 +111,42 @@ def delete_product(product_id: int, db: Session = Depends(get_db)):
 # -----------------
 # مسارات السجلات (Logs)
 # -----------------
-
 @app.get("/logs/", response_model=List[schemas.LogEntry])
 def read_logs(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     logs = db.query(models.LogEntry).order_by(models.LogEntry.timestamp.desc()).offset(skip).limit(limit).all()
     return logs
+
+
+# -----------------
+# مسارات الطلبات (Orders)
+# -----------------
+@app.post("/orders/")
+def create_order(order: schemas.OrderCreate, db: Session = Depends(get_db)):
+    new_order = models.Order(**order.model_dump())
+    db.add(new_order)
+    db.commit()
+    db.refresh(new_order)
+    return new_order
+
+@app.get("/orders/")
+def read_orders(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
+    orders = db.query(models.Order).order_by(models.Order.id.desc()).offset(skip).limit(limit).all()
+    return orders
+
+@app.put("/orders/{order_id}/status")
+def update_order_status(order_id: int, status_update: schemas.OrderStatusUpdate, db: Session = Depends(get_db)):
+    order = db.query(models.Order).filter(models.Order.id == order_id).first()
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    order.status = status_update.status
+    db.commit()
+    return {"detail": "Status updated successfully"}
+
+@app.delete("/orders/{order_id}")
+def delete_order(order_id: int, db: Session = Depends(get_db)):
+    order = db.query(models.Order).filter(models.Order.id == order_id).first()
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    db.delete(order)
+    db.commit()
+    return {"detail": "Order deleted successfully"}
