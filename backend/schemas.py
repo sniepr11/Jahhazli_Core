@@ -1,58 +1,84 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel
 from typing import Optional
 from datetime import datetime
 
 # -----------------
-# Admin Schemas
+# مسارات الإدارة (Admins)
 # -----------------
 class AdminBase(BaseModel):
-    username: str
-    full_name: Optional[str] = None
-    role: str
+        username: str
+        full_name: str
+        role: str = "admin"
 
 class AdminCreate(AdminBase):
-    password: str
+        password: str
 
 class Admin(AdminBase):
-    id: int
-    
-    model_config = ConfigDict(from_attributes=True)
+        id: int
+
+        class Config:
+                from_attributes = True
+                orm_mode = True
 
 # -----------------
-# Product Schemas
+# مسارات المنتجات (Products)
 # -----------------
 class ProductBase(BaseModel):
-    name: str
-    description: Optional[str] = None
-    price: float
-    is_available: bool = True
+        name: str
+        category: str
+        price: float
+        image_url: Optional[str] = None
+        is_available: bool = True
 
 class ProductCreate(ProductBase):
-    pass
+        pass
 
 class ProductPriceUpdate(BaseModel):
-    price: float
+        price: float
 
 class ProductAvailabilityUpdate(BaseModel):
-    is_available: bool
+        is_available: bool
 
 class Product(ProductBase):
-    id: int
-    
-    model_config = ConfigDict(from_attributes=True)
+        id: int
+
+        class Config:
+                from_attributes = True
+                orm_mode = True
 
 # -----------------
-# Log Schemas
+# مسارات السجلات (Logs)
 # -----------------
 class LogEntryBase(BaseModel):
-    action: str
-    details: Optional[str] = None
-
-class LogEntryCreate(LogEntryBase):
-    pass
+        action: str
+        admin_id: Optional[int] = None
 
 class LogEntry(LogEntryBase):
-    id: int
-    timestamp: datetime
-    
-    model_config = ConfigDict(from_attributes=True)
+        id: int
+        timestamp: datetime
+
+        class Config:
+                from_attributes = True
+                orm_mode = True
+
+# -----------------
+# مسارات الطلبات (Orders) - (هذا القسم اللي جان مفقود)
+# -----------------
+class OrderBase(BaseModel):
+        customer_name: str
+        items: str
+        total_price: float
+        status: str = "قيد المعالجة"
+
+class OrderCreate(OrderBase):
+        pass
+
+class OrderStatusUpdate(BaseModel):
+        status: str
+
+class Order(OrderBase):
+        id: int
+
+        class Config:
+                from_attributes = True
+                orm_mode = True
